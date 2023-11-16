@@ -22,6 +22,43 @@ const seedData = [
     { name: "de", desc: "rty", count: 18 },
 ];
 
+const DB_NAME = "demoDB";
+const DB_VERS = 1;
+const DB_STORE = "stuffs";
+
 window.onload = () => {
-    // let request =
+};
+
+const ClickInitDB = () => {
+    let openDB = window.indexedDB.open(DB_NAME, DB_VERS);
+    openDB.onupgradeneeded = () => {
+        let db = openDB.result;
+        db.createObjectStore(DB_STORE, { keyPath: "id", autoIncrement: true});
+    };
+};
+
+const ClickSeedData = () => {
+    let openDB = window.indexedDB.open(DB_NAME, DB_VERS);
+    // Not going to check if upgraded needed Click init db first or fail
+    openDB.onsuccess = () => {
+        let db = openDB.result;
+        let transaction = db.transaction([DB_STORE], "readwrite");
+        let objStore = transaction.objectStore(DB_STORE);
+        for (let i = 0; i < seedData.length; i++) {
+            objStore.add(seedData[i]);
+        }
+    };
+};
+
+const ClickGetKeys = () => {
+    let openDB = window.indexedDB.open(DB_NAME, DB_VERS);
+    openDB.onsuccess = () => {
+        let db = openDB.result;
+        let transaction = db.transaction([DB_STORE], "readonly");
+        let objStore = transaction.objectStore(DB_STORE);
+        let req = objStore.getAllKeys();
+        req.onsuccess = () => {
+            console.log(req.result);
+        };
+    };
 };
